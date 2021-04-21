@@ -1,0 +1,32 @@
+
+.roller {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .roller-head input:not(:last-child) {
+    max-width: 2rem;
+    height: 2rem;
+    text-align: center;
+  
+    margin-right: 5px;
+  }
+  .roller-head input:not(:first-child) {
+    min-width: 5rem;
+    height: 2rem;
+    text-align: center;
+  
+    margin-left: 5px;
+  }
+  
+  .outputs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+  }
+  .outputs h3 {
+    margin: 5px 0.15rem;
+  }

@@ -1,0 +1,107 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: white;
+}
+
+.Status, .char-name, .char-avatar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.status-view {
+    background: rgba(255, 255, 255, .1);
+    backdrop-filter: blur(10px);
+    min-width: 300px;
+    min-height: 300px;
+    padding: 10px;
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 2rem;
+    border: 0.1px solid gray;
+}
+.status-view th {
+    border: 0.1px solid gray;
+    min-width: 100px;
+    margin: 0;
+}
+.status-view th:first-child {
+    border-right: 0;
+}
+
+.status-view tr > td:nth-child(2) {
+    text-align: end;
+}
+
+:root {
+    --charname-right-pos: -1000px;
+}
+
+.char-name {
+    text-align: center;
+
+    -webkit-user-drag: none;
+    position: fixed;
+    right: var(--charname-right-pos);
+    top: 50px;
+
+    transition: 400ms ease;
+}
+.char-name.hovered {
+    --charname-right-pos: 5px;
+}
+
+.char-avatar {
+    aspect-ratio: 1 / 1;
+    width: var(--size, 3.13rem);
+    height: var(--size);
+    border-radius: 50%;
+    object-fit: cover;
+
+    border: var(--border-trickness, 2px) solid var(--border-color, rgba(255, 255, 255, .63));
+
+    -webkit-user-drag: none;
+    position: fixed;
+    right: 5px;
+    top: 5px;
+
+    transition: 400ms ease;
+}
+
+.char-avatar:hover {
+    --border-trickness: 5px;
+    --border-color: rgb(123, 255, 123);
+    box-shadow: 0 0 3.40px rgb(123, 255, 123);
+}
+
+.attr > td:last-child input {
+    appearance: none;
+    -webkit-appearance: none;
+
+    background: transparent;
+    border: none;
+    text-align: end;
+
+    outline: none;
+    border-radius: 15px;
+
+    transition: 400ms ease;
+    border: var(--border-trickness, 1px) solid var(--border-color, rgb(123, 255, 123));
+}
+.attr > td:last-child input:focus {
+    --border-trickness: 2px;
+    --border-color: rgb(255, 145, 209);
+    box-shadow: 0 0 3.10px rgb(255, 145, 209),
+    0 0 calc(3.10px * 2) rgb(255, 145, 209);
+}
+.attr > td:last-child input:hover {
+    --border-trickness: 2px;
+    --border-color: rgb(255, 145, 209);
+    box-shadow: 0 0 3.40px rgb(255, 145, 209);
+}
