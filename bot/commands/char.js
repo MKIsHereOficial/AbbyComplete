@@ -1,4 +1,6 @@
-const {Message, MessageEmbed} = require('discord.js');
+const {Message, MessageEmbed, User} = require('discord.js');
+
+const Database = require('../../database.js');
 
 exports.run = async (client, message, args) => {
   var CHAR_GENERAL_ATTRS = [{name: 'Força', value: 0}, {name: 'Destreza', value: 0}, {name: 'Inteligência', value: 0}, {name: 'Tamanho', value: 0}, {name: 'Constituição', value: 0}, {name: 'Educação', value: 0}, {name: 'Movimento', value: 0}, {name: 'Aparência', value: 0}, ];
@@ -6,7 +8,7 @@ exports.run = async (client, message, args) => {
     return data.name;
   })
 
-  const chars = client.db.collection("chars");
+  const chars = await Database("chars");
 
   var CHAR_INVENTORY = [];
 
@@ -15,6 +17,8 @@ exports.run = async (client, message, args) => {
   let INVENTORY_EMBED_DESCRIPTION = "";
 
   let charName = "Zé da Paçoca";
+  let withoutCharacter = false;
+  let withoutCharacterMessage = `Você não têm personagem.`;
 
   const charNameEmbed = new MessageEmbed()
   .setTitle(charName)
@@ -34,7 +38,7 @@ exports.run = async (client, message, args) => {
 
   if (message.mentions.users.first()) {
     user = message.mentions.users.first();
-    await loadChar(user.id);
+    await loadChar(user);
   } else {
     await loadChar();
   }
@@ -42,40 +46,46 @@ exports.run = async (client, message, args) => {
   loadAttrs();
   loadName();
   //message.channel.send(`${message.author}`, [charNameEmbed, charAttrs, charInventory]);
-  message.channel.send({content: `${message.author}`, embed: charNameEmbed}).then(msg => {
-    const msgs = [msg];
-    msg.channel.send(charAttrs).then(msg => {
-      msgs.push(msg);
-      msg.channel.send(charInventory).then(msg => {
+  if (!withoutCharacter) {
+    message.channel.send({content: `${message.author}`, embed: charNameEmbed}).then(msg => {
+      const msgs = [msg];
+      msg.channel.send(charAttrs).then(msg => {
         msgs.push(msg);
-        function react(msg = new Message()) {
-          return msg.react(`📝`);
-        }
-
-        return react(msg).then(reaction => {
-          if (reaction.users.cache.get(user.id)) {
-            msg.channel.send(`${message.author}\nhttps://abbythebot.web.com`)
-            msgs.map(msg => msg.delete());
+        msg.channel.send(charInventory).then(msg => {
+          msgs.push(msg);
+          function react(msg = new Message()) {
+            return msg.react(`📝`);
           }
+
+          return react(msg).then(reaction => {
+            if (reaction.users.cache.get(user.id)) {
+              msg.channel.send(`${message.author}\nhttps://abbythebot.web.com`)
+              msgs.map(msg => msg.delete());
+            }
+          });
         });
       });
     });
-  });
+  } else {
+    message.channel.send(`${message.author}\n${withoutCharacterMessage}`);
+  }
 
 
-  async function loadChar(user = message.author.id) {
+  async function loadChar(user = message.author) {
+    if (user != message.author) withoutCharacterMessage = `\`${user.tag}\` não têm personagem.`;
+    user = user.id;
     try {
-      let charData = {name: 'Zé da Paçoca', attrs: [{name: 'Força', value: 15}], inventory: [{name: 'Lanterna', quantity: 1}]};
-      charData = (chars.doc(user)) ? chars.doc(user) : {};
+      let charData = {value: {name: 'Zé da Paçoca', attrs: [{name: 'Força', value: 15}], inventory: [{name: 'Lanterna', quantity: 1}]}};
+      charData = (await chars.exists(user)) ? await chars.get(user, charData) : await chars.set(user, charData);
 
-      charData = await getData(charData);
-      if (!charData) return new Error("Não existe charData.");
+      charData = charData.value;
 
-      //console.dir(charData);
+      console.dir(charData);
 
-      charName = charData.name;
-      CHAR_GENERAL_ATTRS = charData.attrs;
-      CHAR_INVENTORY = charData.inventory;
+      charName = charData.name || "Sem Personagem";
+      withoutCharacter = true;
+      //CHAR_GENERAL_ATTRS = charData.attrs || CHAR_GENERAL_ATTRS;
+      //CHAR_INVENTORY = charData.inventory || [];
 
       loadInventory();
       loadAttrs();
@@ -83,16 +93,17 @@ exports.run = async (client, message, args) => {
     } catch (err) {
       console.error(err);
       user = message.author.id;
-      let charData = {name: 'Zé da Paçoca', attrs: [{name: 'Força', value: 15}], inventory: [{name: 'Lanterna', quantity: 1}]};
-      charData = (chars.doc(user)) ? chars.doc(user) : {};
+      let charData = {value: {name: 'Zé da Paçoca', attrs: [{name: 'Força', value: 15}], inventory: [{name: 'Lanterna', quantity: 1}]}};
+      charData = (await chars.exists(user)) ? await chars.get(user, charData) : await chars.set(user, charData);
 
-      if (!charData) return null;
+      charData = charData.value;
 
-      charData = await getData(charData);
-
+      console.dir(charData);
+      
       charName = charData.name;
-      CHAR_GENERAL_ATTRS = charData.attrs;
-      CHAR_INVENTORY = charData.inventory;
+
+      //CHAR_GENERAL_ATTRS = charData.attrs || [];
+      //CHAR_INVENTORY = charData.inventory || [];
 
       loadInventory();
       loadAttrs();
@@ -122,13 +133,6 @@ exports.run = async (client, message, args) => {
 
   function loadName() {
     charNameEmbed.setTitle(charName);
-  }
-
-  async function getData(ref) {
-    let data = await ref.get();
-    data = data.data();
-
-    return data;
   }
 }
 

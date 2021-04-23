@@ -80,28 +80,40 @@
     box-shadow: 0 0 3.40px rgb(123, 255, 123);
 }
 
-.attr > td:last-child input {
-    appearance: none;
-    -webkit-appearance: none;
+.attr > td:last-child {
 
     background: transparent;
     border: none;
     text-align: end;
 
-    outline: none;
     border-radius: 15px;
 
     transition: 400ms ease;
-    border: var(--border-trickness, 1px) solid var(--border-color, rgb(123, 255, 123));
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
 }
-.attr > td:last-child input:focus {
-    --border-trickness: 2px;
-    --border-color: rgb(255, 145, 209);
-    box-shadow: 0 0 3.10px rgb(255, 145, 209),
+.attr > td:last-child * {
+    outline: none;
+    color: #bbb;
+    margin: 0 2.5px;
+}
+.attr > td:last-child > i {
+    border: none;
+    background: transparent;
+    color: #bbb;
+    text-align: center;
+
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.attr > td:last-child span:active {
+    text-shadow: 0 0 3.10px rgb(255, 145, 209),
     0 0 calc(3.10px * 2) rgb(255, 145, 209);
 }
-.attr > td:last-child input:hover {
-    --border-trickness: 2px;
-    --border-color: rgb(255, 145, 209);
-    box-shadow: 0 0 3.40px rgb(255, 145, 209);
+.attr > td:last-child:hover span {
+    text-shadow: 0 0 3.40px rgb(255, 145, 209);
 }
