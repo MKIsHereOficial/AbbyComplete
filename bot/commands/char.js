@@ -82,8 +82,8 @@ exports.run = async (client, message, args) => {
 
       console.dir(charData);
 
-      charName = charData.name || "Sem Personagem";
-      withoutCharacter = true;
+      charName = charData.name;
+      if (!charName) withoutCharacter = true;
       //CHAR_GENERAL_ATTRS = charData.attrs || CHAR_GENERAL_ATTRS;
       //CHAR_INVENTORY = charData.inventory || [];
 
