@@ -7,7 +7,7 @@ exports.run = async(client, message, args) => {
     const data = await db.exists(message.author.id);
 
     const embed = new MessageEmbed()
-    .setTitle(`Documento: ${data.key}`)
+    .setTitle(`Documento: ${db.database.name}/${data.key}`)
     .addField('Existe', data.exists)
     .addField('Valor', "```json\n"+JSON.stringify(data.value, null, 1)+"```")
     .setColor('BLUE');
