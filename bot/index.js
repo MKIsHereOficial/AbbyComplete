@@ -4,22 +4,21 @@ const fs = require('fs'), path = require('path');
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-const Discord = require('discord.js'), client = new Discord.Client();
+const Discord = require('discord.js'), client = new Discord.Client({partials: ["MESSAGE", "CHANNEL", "REACTION"]});
 
 client.commands = new Discord.Collection();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const firebase = require('firebase').default;
-
-firebase.initializeApp(require('../web/src/firebase.config.json'));
-
-const firestore = firebase.firestore();
-
-client.db = firestore;
+client.dashboardURL = "https://abbythebot-b5876.web.app/";
+client.db = require('./database.js');
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const isTesting = true;
+client.isTesting = isTesting;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 async function loadCommands() {
   try {
@@ -62,32 +61,45 @@ loadCommands();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-client.on('ready', () => {
-  console.log(`Abby tá na área! [${client.user.tag}]`);
-});
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-client.on('message', async message => {
-  if ( message.author.bot || !message.guild) return;
-  const prefix = ".";
+async function loadEvents() {
+  try {
+    var eventsFolder = await fs.readdirSync(path.join(__dirname, 'events'));
 
 
-  if (!message.content.startsWith(prefix)) return;
+    console.log(`|||||||||||||||||||||||||||||||||||||||||`);
 
-  const args = message.content.slice(prefix.length).trim().split(/ +/g);
-  let command = args.shift().toLowerCase();
-  command = client.commands.get(command);
+    let size = 0;
+    console.log(`Iniciando eventos... [${size}/${eventsFolder.length}]`);
 
-  if (!command) return;
+    eventsFolder.map(fileName => {
+      if (!fileName.endsWith('.js')) return;
 
-  command.run(client, message, args);
-});
+      size++;
+
+      let file = require(path.join(__dirname, "events", fileName));
+
+      fileName = fileName.replace('.js', '');
+
+
+      let ev = file;
+
+      client.on(fileName, ev.run.bind(null, client));
+
+      console.log(`${fileName} iniciado. [${size}/${eventsFolder.length}]`);
+  });
+
+  console.log(`Eventos iniciados. [${size}/${eventsFolder.length}]`);
+  } catch (err) {
+    console.error(err);
+  }
+}
+loadEvents();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function start() {
-  client.login(require('./bot.config.json').TOKEN);
+  client.login((!isTesting) ? require('./bot.config.json').TOKEN : require('./bot.config.json').TEST_TOKEN);
 }
 
 start();

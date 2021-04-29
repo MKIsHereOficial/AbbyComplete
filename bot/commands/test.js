@@ -1,4 +1,4 @@
-const Database = require('../../database.js');
+const Database = require('../database.js');
 const {MessageEmbed} = require('discord.js');
 
 exports.run = async(client, message, args) => {
