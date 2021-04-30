@@ -5,9 +5,6 @@ import React, {useState, useCallback} from 'react';
 import Roller from './components/Roller';
 import Status from './components/Status';
 
-import firebase from './firebase';
-
-const analytics = firebase.analytics();
 
 
 function App() {

@@ -3,18 +3,18 @@ import './index.css';
 import '@material/react-material-icon/dist/material-icon.css';
 import MaterialIcon from '@material/react-material-icon';
 
-import React, {useState, useCallback} from 'react';
+import React, {useState, useEffect} from 'react';
 
-import firebase from '../../firebase';
+import Database from '../../databasejs';
 
 //import random from 'random';
 
 /////////////////////////////////////////////////////
 
-const firestore = firebase.firestore();
-
 var savedAttrs = [];
 var savedCharName = '';
+
+var chars = {};
 
 
 function AttrValueChanger({baseValue = 0, callback = function(value = 0) {return value;}}) {
@@ -76,9 +76,7 @@ function AttrView({char = {attrs: []}, attr = {name: '', value: 0}}) {
 
 function StatusView({char = {name: '', inventory: [], attrs: [], id: '', avatar: ''}}) {
     const save = ({attrs = char.attrs, name = char.name, inventory = char.inventory, id = char.id, avatar = char.avatar}) => {
-        const charRef = firestore.collection('chars').doc(id);
-
-        charRef.set({avatar, name, attrs, inventory, id});
+        chars.set(char.id, {avatar, name, attrs, inventory, id});
         
         console.dir([name, id, avatar, attrs, inventory]);
 
@@ -120,12 +118,31 @@ function Avatar({src = "", char = {name: ''}}) {
 export default function Status() {
     const userId = '765002665041068033';
 
-    const chars = firestore.collection('chars');
-    const charRef = chars.doc(userId);
-    const [char, setChar] = useState({});
-    charRef.get().then(ref => {
-        setChar(ref.data());
-    });
+    useEffect(() => {
+        async function getDatabase(dbName) {
+            const data = await Database(dbName);
+            chars = data;
+        }
+        getDatabase('chars');
+    }, [])
+
+    const [char, setChar] = useState({id: userId});
+    useEffect(() => {
+        try {
+            async function getChar(id) {
+                try {
+                    const data = await chars.get(id);
+                    setChar(data);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+            getChar(userId);
+        } catch (err) {
+            console.error(err);
+        }
+    }, [])
+    console.dir(char);
 
     return (
         <div className="Status">

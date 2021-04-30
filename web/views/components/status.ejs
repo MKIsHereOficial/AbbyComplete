@@ -1,0 +1,49 @@
+<div class="status_container_<%= name %> status_container">
+    <style>
+        @import url('./root.css');
+        .status_container_<%= name %> {
+            width: 20rem;
+
+            display: flex;
+            justify-content: space-around; 
+            align-items: center;
+        }
+        .status_container_<%= name %> .status_value {
+            margin-left: auto;
+        }
+        .status_container_<%= name %> input[type="number"] {
+            max-width: 100px;
+            outline: none;
+            text-align: center;
+            border-radius: 5px 15px 5px 15px;
+            border: 0.1px solid var(--main-color);
+
+        }
+        .status_container_<%= name %> input[type="number"]:hover {
+            border: 1px solid var(--main-color);
+    
+            box-shadow: 0px 0px 2.5px var(--main-color),
+            0px 1px 2.5px var(--main-color),
+            1px 0px 2.5px var(--main-color);
+        }
+    
+        .status_container_<%= name %> input[type="number"]::-webkit-inner-spin-button {
+            display: none;
+        }
+
+        .statusBtn {
+            background: var(--main-color);
+            color: black;
+            border-radius: 5px;
+            border: 0.1px solid var(--main-color);
+            width: var(--size, 15px);
+            height: var(--size);
+        }
+
+    </style>
+    
+    <label for="status_<%= name %>"><%= name %></label>
+    <div class="status_value">
+        <input value="<%= value %>" type="number" name="status_<%= name %>" id="status_<%= name %>">
+    </div>
+</div>
