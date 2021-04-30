@@ -24,5 +24,26 @@
         </form>
     </div>
 
+    <div class="header-container">
+        <div class="avatar">
+            <img src="<%= avatar %>" alt="<%= name %>" class="avatarIcon">
+            <h1 class="avatarName"><%= name %></h1>
+            <script>
+                window.onload = () => {
+                    const container = document.querySelector('.avatar');
+                    const name = document.querySelector('.avatarName');
+
+
+                    img.onmouseenter = () => {
+                        name.classList.add('hover');
+                    }
+                    img.onmouseleave = () => {
+                        name.classList.remove('hover');
+                    }
+                }
+            </script>
+        </div>
+    </div>
+
 </body>
 </html>
